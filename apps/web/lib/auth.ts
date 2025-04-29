@@ -5,6 +5,7 @@ import { BACKEND_URL } from "./constants"
 import {
     FormState,
     SignupFormSchema,
+    LoginFormSchema
 } from "./type"
 
 export async function signUp(
@@ -37,6 +38,43 @@ export async function signUp(
     } else {
         return {
             message: response.status === 409 ? "The user already exists!!!" : response.statusText
+        }
+    }
+}
+
+export async function signIn(
+    state: FormState,
+    formData: FormData
+): Promise<FormState> {
+    const validatedFields = LoginFormSchema.safeParse({
+        email: formData.get("email"),
+        password: formData.get("password")
+    })
+    if (!validatedFields.success) {
+        return {
+            error: validatedFields.error.flatten().fieldErrors
+        }
+    }
+
+    const response = await fetch(
+        `${BACKEND_URL}/auth/signin`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(validatedFields.data)
+        }
+    )
+    if (response.ok) {
+        const result = await response.json()
+
+        console.log("result: ", result)
+
+        // TODO: create session for authenticated user
+    } else {
+        return {
+            message: response.status === 401 ? "Invalid User Credentials" : response.statusText
         }
     }
 }
