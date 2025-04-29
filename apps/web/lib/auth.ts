@@ -7,6 +7,7 @@ import {
     SignupFormSchema,
     LoginFormSchema
 } from "./type"
+import { createSession } from "./sessions"
 
 export async function signUp(
     state: FormState,
@@ -72,6 +73,15 @@ export async function signIn(
         console.log("result: ", result)
 
         // TODO: create session for authenticated user
+
+        await createSession({
+            user: {
+                id: result.id,
+                name: result.name,
+            },
+        })
+
+        redirect('/')
     } else {
         return {
             message: response.status === 401 ? "Invalid User Credentials" : response.statusText
