@@ -70,7 +70,7 @@ export async function signIn(
     if (response.ok) {
         const result = await response.json()
 
-        console.log("result: ", result)
+        // console.log("result: ", result)
 
         // TODO: create session for authenticated user
 
@@ -79,6 +79,7 @@ export async function signIn(
                 id: result.id,
                 name: result.name,
             },
+            accessToken: result.access_token,
         })
 
         redirect('/')
