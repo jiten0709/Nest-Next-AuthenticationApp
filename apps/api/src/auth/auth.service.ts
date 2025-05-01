@@ -49,4 +49,13 @@ export class AuthService {
             access_token
         }
     }
+
+    async validateJwtUser(userId: number) {
+        const user = await this.userService.findOne(userId)
+        if (!user) throw new UnauthorizedException("User not found!")
+
+        const currentUser = { id: user.id, name: user.name }
+
+        return currentUser
+    }
 }
