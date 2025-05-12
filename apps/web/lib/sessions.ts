@@ -10,7 +10,7 @@ export type Session = {
         name: string;
     };
     accessToken: string;
-    // refreshToken: string;
+    refreshToken: string;
 }
 
 const secretKey = process.env.SESSION_SECRET_KEY!
@@ -48,7 +48,7 @@ export async function getSession() {
 
         return payload as Session
     } catch (error) {
-        console.error("Failed to verify the session", error)
+        console.error("sessions :: Failed to verify the session", error)
         redirect("/auth/signin")
     }
 }

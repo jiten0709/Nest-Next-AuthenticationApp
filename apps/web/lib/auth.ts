@@ -38,7 +38,7 @@ export async function signUp(
         redirect("/auth/signin")
     } else {
         return {
-            message: response.status === 409 ? "The user already exists!!!" : response.statusText
+            message: response.status === 409 ? "auth :: The user already exists!!!" : response.statusText
         }
     }
 }
@@ -80,12 +80,13 @@ export async function signIn(
                 name: result.name,
             },
             accessToken: result.access_token,
+            refreshToken: result.refresh_token,
         })
 
         redirect('/')
     } else {
         return {
-            message: response.status === 401 ? "Invalid User Credentials" : response.statusText
+            message: response.status === 401 ? "auth :: Invalid User Credentials" : response.statusText
         }
     }
 }
