@@ -1,5 +1,5 @@
 import { ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { verify } from 'argon2';
+import { hash, verify } from 'argon2';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthJwtPayload } from './types/auth-jwtPayload';
@@ -34,26 +34,26 @@ export class AuthService {
     }
 
     async login(userId: number, name?: string) {
-        const { access_token, refresh_token } = await this.generateTokens(userId)
+        const { accessToken, refreshToken } = await this.generateTokens(userId)
 
         return {
             id: userId,
             name: name,
-            access_token: access_token,
-            refresh_token: refresh_token,
+            access_token: accessToken,
+            refresh_token: refreshToken,
         }
     }
 
     async generateTokens(userId: number) {
         const payload: AuthJwtPayload = { sub: userId }
-        const [access_token, refresh_token] = await Promise.all([
+        const [accessToken, refreshToken] = await Promise.all([
             this.jwtService.signAsync(payload),
             this.jwtService.signAsync(payload, this.refreshTokenConfig)
         ])
 
         return {
-            access_token,
-            refresh_token,
+            accessToken,
+            refreshToken,
         }
     }
 
@@ -64,5 +64,35 @@ export class AuthService {
         const currentUser = { id: user.id, name: user.name }
 
         return currentUser
+    }
+
+    async validateRefreshToken(userId: number, refreshToken: string) {
+        const user = await this.userService.findOne(userId)
+        if (!user)
+            throw new UnauthorizedException("auth.service :: user not found!")
+
+        if (!user.hashedRefreshToken)
+            throw new UnauthorizedException("auth.service :: No refresh token found!")
+
+        const refreshTokenMactched = await verify(user.hashedRefreshToken, refreshToken)
+        if (!refreshTokenMactched)
+            throw new UnauthorizedException("auth.service :: Invalid refresh token!")
+
+        const currentUser = { id: user.id }
+
+        return currentUser
+    }
+
+    async refreshToken(userId: number, name: string) {
+        const { accessToken, refreshToken } = await this.generateTokens(userId)
+        const hasedRT = await hash(refreshToken)
+        await this.userService.updateHashedRefreshToken(userId, hasedRT)
+
+        return {
+            id: userId,
+            name: name,
+            accessToken,
+            refreshToken,
+        }
     }
 }
