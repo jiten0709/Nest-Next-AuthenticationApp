@@ -35,6 +35,8 @@ export class AuthService {
 
     async login(userId: number, name?: string) {
         const { accessToken, refreshToken } = await this.generateTokens(userId)
+        const hasedRT = await hash(refreshToken)
+        await this.userService.updateHashedRefreshToken(userId, hasedRT)
 
         return {
             id: userId,

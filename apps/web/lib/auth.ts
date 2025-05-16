@@ -1,7 +1,7 @@
 "use server"
 
 import { redirect } from "next/navigation"
-import { BACKEND_URL } from "./constants"
+import { BACKEND_URL, FRONTEND_URL } from "./constants"
 import {
     FormState,
     SignupFormSchema,
@@ -88,5 +88,47 @@ export async function signIn(
         return {
             message: response.status === 401 ? "auth :: Invalid User Credentials" : response.statusText
         }
+    }
+}
+
+export const refreshToken = async (oldRefreshToken: string) => {
+    try {
+        const response = await fetch(
+            `${BACKEND_URL}/auth/refresh`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    refresh: oldRefreshToken,
+                })
+            }
+        )
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("refreshToken :: backend response:", errorText);
+            throw new Error(`auth.ts :: Failed to refresh the token :: ${response.statusText}`)
+        }
+
+        const { accessToken, refreshToken } = await response.json()
+        const updateResponse = await fetch(
+            `${FRONTEND_URL}/api/auth/update`,
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    accessToken,
+                    refreshToken,
+                }),
+            }
+        )
+        if (!updateResponse.ok)
+            throw new Error(`auth.ts :: Failed to update the tokens :: ${updateResponse.statusText}`)
+
+        return accessToken
+    } catch (error) {
+        console.log("auth.ts :: failed to update the tokens :: ", error)
+
+        return null
     }
 }
