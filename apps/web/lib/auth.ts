@@ -79,8 +79,8 @@ export async function signIn(
                 id: result.id,
                 name: result.name,
             },
-            accessToken: result.access_token,
-            refreshToken: result.refresh_token,
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
         })
 
         redirect('/')
