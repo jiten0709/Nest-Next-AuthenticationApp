@@ -1,84 +1,149 @@
-# Turborepo starter
+# Nest-Next Authentication App
 
-This Turborepo starter is maintained by the Turborepo core team.
+## Overview
 
-## Using this example
+This project is a full-stack authentication system built with **NestJS** for the backend API and **Next.js** for the frontend web application. It provides a comprehensive authentication solution with multiple strategies including local authentication, JWT tokens, and Google OAuth integration.
 
-Run the following command:
+---
 
-```sh
-npx create-turbo@latest
-```
+## Features
 
-## What's inside?
+- Passport.js for authentication strategies
+- JWT for token-based authentication
+- TypeORM for database access
+- Server-side authentication
+- Client-side route protection
+- API route handlers for authentication flow
 
-This Turborepo includes the following packages/apps:
+---
 
-### Apps and Packages
+## Build System
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- **Turborepo** for monorepo management and optimized builds
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+---
 
-### Utilities
+## Tech Stack
 
-This Turborepo has some additional tools already setup for you:
+### Backend (NestJS)
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+- Express.js
 
-### Build
+- **User Authentication:**
+  - Sign Up with username and password
+  - Sign In with username and password
+  - Google OAuth 2.0 integration
+- **Database:**
+  - PostgreSQL DB with Prisma ORM
+- **API Security:**
+  - Protect APIs with JWT (JSON Web Tokens)
+  - Refresh Tokens for extended sessions
+  - Revoke Tokens for immediate session invalidation
+- **Authorization:**
+  - Role-Based Access Control (RBAC)
+  - Public Routes for unrestricted access
+- **Backend Framework:**
+  - NestJS Configuration
 
-To build all apps and packages, run the following command:
+### Frontend (Next.js)
 
-```
-cd my-turborepo
-pnpm build
-```
+- **Authentication Forms:**
+  - Sign Up Form
+  - Sign In Form
+- **State Management:**
+  - `useFormState` Hook for form handling
+- **Session Management:**
+  - Sessions
+  - Update Sessions
+- **Page Protection:**
+  - Protect Pages
+  - Middleware for route guarding
+  - Role-Based Access Control (RBAC) for page access
 
-### Develop
+---
 
-To develop all apps and packages, run the following command:
+## Setup & Installation
 
-```
-cd my-turborepo
-pnpm dev
-```
+### Prerequisites
 
-### Remote Caching
+- Node.js (v16+)
+- npm or yarn
+- PostgreSQL or another compatible database
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+### Installation
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+1.  **Clone the repository**
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+    ```bash
+    git clone https://github.com/jiten0709/Nest-Next-AuthenticationApp.git
+    cd Nest-Next-AuthenticationApp
+    ```
 
-```
-cd my-turborepo
-npx turbo login
-```
+2.  **(Optional) Initialize Turborepo (if starting a new monorepo)**
+    _If you're setting up the monorepo from scratch or re-initializing, you might use:_
+    ```bash
+    npx create-turbo@latest
+    # Or, if adding to an existing project:
+    # npm install turbo --save-dev
+    # npx turbo init
+    ```
+    _This project assumes Turborepo is already configured._
+3.  **Install dependencies**
+    ```bash
+    npm install # or yarn install
+    cd api
+    npm install # or yarn install
+    cd ../web
+    npm install # or yarn install
+    ```
+4.  **Configure environment variables**
+    - Create `.env` files in both `api` and `web` directories
+    - Set up the required environment variables (see `.env.example` files)
+5.  **Set up the database**
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+    - Ensure your PostgreSQL (or chosen DB) server is running.
+    - Run migrations (specific commands will depend on your TypeORM setup, typically `npm run migrate` in the `api` directory).
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+6.  **Start the development servers**
+    ```bash
+    # In the root directory
+    npm run dev
+    ```
+    The services (api as well as web) will typically run on `http://localhost:<PORT>` as configured
 
-```
-npx turbo link
-```
+---
 
-## Useful Links
+## Authentication Flow
 
-Learn more about the power of Turborepo:
+### Local Authentication
 
-- [Tasks](https://turbo.build/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/docs/reference/command-line-reference)
+1.  User registers via `/auth/signup`
+2.  User signs in via `/auth/signin`
+3.  Backend validates credentials and issues JWT token
+4.  Frontend stores token in secure cookies
+
+### Google OAuth
+
+1.  User initiates login via `/auth/google/login`
+2.  User is redirected to Google consent screen
+3.  After authorization, Google redirects to `/auth/google/callback`
+4.  Backend processes the authentication and issues JWT token
+5.  Frontend stores token in secure cookies
+
+### Token Refresh
+
+- Access tokens are short-lived
+- Refresh tokens are used to obtain new access tokens
+- Implemented via `/auth/refresh` endpoint
+
+### Sign Out
+
+1.  User signs out via `/auth/signout`
+2.  Backend invalidates tokens
+3.  Frontend clears auth cookies
+
+---
+
+## Contributors
+
+- Jiten Parmar

@@ -1,4 +1,5 @@
 import { createSession } from "@/lib/sessions";
+import { Role } from "@/lib/type";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 import { ref } from "process";
@@ -9,8 +10,9 @@ export async function GET(req: NextRequest) {
     const refreshToken = searchParams.get("refreshToken");
     const userId = searchParams.get("userId");
     const name = searchParams.get("name");
+    const role = searchParams.get('role')
 
-    if (!accessToken || !refreshToken || !userId || !name) {
+    if (!accessToken || !refreshToken || !userId || !name || !role) {
         throw new Error("app/api/auth/google/callback :: Google OAuth Failed!");
     }
 
@@ -18,6 +20,7 @@ export async function GET(req: NextRequest) {
         user: {
             id: userId,
             name: name,
+            role: role as Role
         },
         accessToken: accessToken,
         refreshToken: refreshToken,
