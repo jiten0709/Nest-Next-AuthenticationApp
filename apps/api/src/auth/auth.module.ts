@@ -11,7 +11,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import refreshConfig from './config/refresh.config';
 import { RefreshStrategy } from './strategies/refresh-token.strategy';
 import googleOauthConfig from './config/google-oauth.config';
-import { GoogleAuthGuard } from './guards/google-auth/google-auth.guard';
+import { GoogleStrategy } from './strategies/google.strategy';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { GoogleAuthGuard } from './guards/google-auth/google-auth.guard';
     LocalStrategy,
     JwtStrategy,
     RefreshStrategy,
-    GoogleAuthGuard
+    GoogleStrategy,
   ],
 })
 export class AuthModule { }

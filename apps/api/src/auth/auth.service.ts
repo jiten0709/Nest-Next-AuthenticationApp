@@ -103,6 +103,10 @@ export class AuthService {
         if (user)
             return user
 
-        return this.userService.create(googleUser)
+        return await this.userService.create(googleUser)
+    }
+
+    async signout(userId: number) {
+        return await this.userService.updateHashedRefreshToken(userId, null)
     }
 }
